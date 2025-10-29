@@ -85,7 +85,7 @@
         <tr v-for="product in products" :key="product.id">
           <td class="px-6 py-4">{{ product.id }}</td>
           <td class="px-6 py-4">{{ product.name }}</td>
-          <td class="px-6 py-4">Rp {{ product.price }}</td>
+          <td class="px-6 py-4">Rp {{ formatPrice(product.price) }}</td>
           <td class="px-6 py-4">{{ product.stock }}</td>
           <td class="px-6 py-4">
             <button
@@ -176,6 +176,10 @@ const closeForm = () => {
   showForm.value = false;
   editing.value = false;
   form.value = { id: null, name: '', phone: '' };
+};
+
+const formatPrice = (price) => {
+  return new Intl.NumberFormat('id-ID').format(price);
 };
 
 onMounted(() => {
