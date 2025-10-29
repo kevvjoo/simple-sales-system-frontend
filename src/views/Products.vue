@@ -64,6 +64,16 @@
       </div>
     </div>
 
+    <!-- Add Search Bar -->
+    <div class="mb-4">
+      <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search products by name or price..."
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
     <!-- Loading -->
     <div v-if="loading" class="text-center py-8">
       <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
@@ -73,35 +83,35 @@
     <div v-else class="bg-white shadow-md rounded">
       <table class="min-w-full">
         <thead class="bg-gray-50">
-        <tr>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
-          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Price</th>
-          <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Stock</th>
-          <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-        </tr>
+          <tr>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Name</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Price</th>
+            <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Stock</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+          </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-        <tr v-for="product in products" :key="product.id">
-          <td class="px-6 py-4">{{ product.id }}</td>
-          <td class="px-6 py-4">{{ product.name }}</td>
-          <td class="px-6 py-4">Rp {{ product.price }}</td>
-          <td class="px-6 py-4">{{ product.stock }}</td>
-          <td class="px-6 py-4">
-            <button
-                @click="editProduct(product)"
-                class="text-blue-600 hover:text-blue-900 mr-3"
-            >
-              Edit
-            </button>
-            <button
-                @click="deleteProduct(product.id)"
-                class="text-red-600 hover:text-red-900"
-            >
-              Delete
-            </button>
-          </td>
-        </tr>
+          <tr v-for="product in filteredProducts" :key="product.id">
+            <td class="px-6 py-4">{{ product.id }}</td>
+            <td class="px-6 py-4">{{ product.name }}</td>
+            <td class="px-6 py-4">Rp {{ product.price }}</td>
+            <td class="px-6 py-4">{{ product.stock }}</td>
+            <td class="px-6 py-4">
+              <button
+                  @click="editProduct(product)"
+                  class="text-blue-600 hover:text-blue-900 mr-3"
+              >
+                Edit
+              </button>
+              <button
+                  @click="deleteProduct(product.id)"
+                  class="text-red-600 hover:text-red-900"
+              >
+                Delete
+              </button>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
@@ -109,11 +119,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import api from '../axios';
 import { showSuccess, showError, confirmDelete } from "../utils/sweetalert.js";
 
 const products = ref([]);
+const searchQuery = ref('');
 const loading = ref(false);
 const showForm = ref(false);
 const editing = ref(false);
@@ -121,6 +132,18 @@ const form = ref({
   id: null,
   name: '',
   phone: '',
+});
+
+const filteredProducts = computed(() => {
+  if (!searchQuery.value) {
+    return products.value;
+  }
+
+  const query = searchQuery.value.toLowerCase();
+  return products.value.filter(product =>
+      product.name.toLowerCase().includes(query) ||
+      product.price.toString().includes(query)
+  );
 });
 
 const fetchProducts = async () => {
