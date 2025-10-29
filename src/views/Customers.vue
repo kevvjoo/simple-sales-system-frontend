@@ -97,6 +97,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import api from '../axios';
+import { showSuccess, showError, confirmDelete } from "../utils/sweetalert.js";
 
 const customers = ref([]);
 const loading = ref(false);
@@ -115,7 +116,7 @@ const fetchCustomers = async () => {
     customers.value = response.data;
   } catch (error) {
     console.error('Error fetching customers:', error);
-    alert('Failed to fetch customers');
+    showError('Failed to fetch customers. Error: ' + error.response.data.message);
   } finally {
     loading.value = false;
   }
@@ -130,10 +131,10 @@ const saveCustomer = async () => {
     }
     closeForm();
     await fetchCustomers();
-    alert('Customer saved successfully!');
+    showSuccess('Customer saved successfully!');
   } catch (error) {
     console.error('Error saving customer:', error);
-    alert('Failed to save customer');
+    showError('Failed to save customer. Error: ' + error.response.data.message);
   }
 };
 
@@ -144,15 +145,16 @@ const editCustomer = (customer) => {
 };
 
 const deleteCustomer = async (id) => {
-  if (!confirm('Are you sure?')) return;
+  const result = await confirmDelete('Are you sure you want to delete this customer?');
+  if (!result.isConfirmed) return;
 
   try {
     await api.delete(`/customers/${id}`);
     await fetchCustomers();
-    alert('Customer deleted successfully!');
+    showSuccess('Customer deleted successfully!');
   } catch (error) {
     console.error('Error deleting customer:', error);
-    alert('Failed to delete customer');
+    showError('Failed to delete customer. Error: ' + error.response.data.message);
   }
 };
 

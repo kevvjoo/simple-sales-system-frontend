@@ -166,6 +166,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import api from '../axios';
+import { showSuccess, showError, confirmDelete } from "../utils/sweetalert.js";
 
 const salesOrders = ref([]);
 const customers = ref([]);
@@ -185,8 +186,8 @@ const fetchSalesOrders = async () => {
     const response = await api.get('/salesOrders');
     salesOrders.value = response.data;
   } catch (error) {
-    console.error('Error fetching sales:', error);
-    alert('Failed to fetch sales');
+    console.error('Error fetching sales orders:', error);
+    showError('Failed to fetch sales orders. Error: ' + error.response.data.message);
   } finally {
     loading.value = false;
   }
@@ -239,7 +240,7 @@ const saveSalesOrder = async () => {
   for (const item of form.value.items) {
     const product = products.value.find(p => p.id === item.product_id);
     if (product && product.stock < item.qty) {
-      alert(`Insufficient stock for ${product.name}. Available: ${product.stock}`);
+      showError(`Insufficient stock for ${product.name}. Available: ${product.stock}`);
       return;
     }
   }
@@ -250,10 +251,10 @@ const saveSalesOrder = async () => {
     closeForm();
     await fetchSalesOrders();
     await fetchProducts(); // Refresh products to show updated stock
-    alert('Sale transaction saved successfully!');
+    showSuccess('Sales order saved successfully!');
   } catch (error) {
     console.error('Error saving sale:', error);
-    alert(error.response?.data?.message || 'Failed to save sale transaction');
+    showError(error.response?.data?.message || 'Failed to save sales order');
   } finally {
     saving.value = false;
   }
