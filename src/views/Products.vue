@@ -111,6 +111,7 @@
 <script setup>
 import { ref, onMounted } from 'vue';
 import api from '../axios';
+import { showSuccess, showError, confirmDelete } from "../utils/sweetalert.js";
 
 const products = ref([]);
 const loading = ref(false);
@@ -129,7 +130,7 @@ const fetchProducts = async () => {
     products.value = response.data;
   } catch (error) {
     console.error('Error fetching products:', error);
-    alert('Failed to fetch products');
+    showError('Failed to fetch products. Error: ' + error.response.data.message);
   } finally {
     loading.value = false;
   }
@@ -144,10 +145,10 @@ const saveProduct = async () => {
     }
     closeForm();
     await fetchProducts();
-    alert('Product saved successfully!');
+    showSuccess('Product saved successfully!');
   } catch (error) {
     console.error('Error saving product:', error);
-    alert('Failed to save product');
+    showError('Failed to save products. Error: ' + error.response.data.message);
   }
 };
 
@@ -158,15 +159,16 @@ const editProduct = (product) => {
 };
 
 const deleteProduct = async (id) => {
-  if (!confirm('Are you sure?')) return;
+  const result = await confirmDelete('Are you sure you want to delete this product?');
+  if (!result.isConfirmed) return;
 
   try {
     await api.delete(`/products/${id}`);
     await fetchProducts();
-    alert('Product deleted successfully!');
+    showSuccess('Product deleted successfully!');
   } catch (error) {
     console.error('Error deleting product:', error);
-    alert('Failed to delete product');
+    showError('Failed to delete product. Error: ' + error.response.data.message);
   }
 };
 
