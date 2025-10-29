@@ -52,6 +52,16 @@
       </div>
     </div>
 
+    <!-- Add Search Bar -->
+    <div class="mb-4">
+      <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search customer by name..."
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
     <!-- Loading -->
     <div v-if="loading" class="text-center py-8">
       <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
@@ -69,7 +79,7 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          <tr v-for="customer in customers" :key="customer.id">
+          <tr v-for="customer in filteredCustomers" :key="customer.id">
             <td class="px-6 py-4">{{ customer.id }}</td>
             <td class="px-6 py-4">{{ customer.name }}</td>
             <td class="px-6 py-4">{{ customer.phone }}</td>
@@ -95,11 +105,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import api from '../axios';
 import { showSuccess, showError, confirmDelete } from "../utils/sweetalert.js";
 
 const customers = ref([]);
+const searchQuery = ref('');
 const loading = ref(false);
 const showForm = ref(false);
 const editing = ref(false);
@@ -107,6 +118,17 @@ const form = ref({
   id: null,
   name: '',
   phone: '',
+});
+
+const filteredCustomers = computed(() => {
+  if (!searchQuery.value) {
+    return customers.value;
+  }
+
+  const query = searchQuery.value.toLowerCase();
+  return customers.value.filter(customer =>
+      customer.name.toLowerCase().includes(query)
+  );
 });
 
 const fetchCustomers = async () => {
