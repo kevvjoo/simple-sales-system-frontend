@@ -11,6 +11,13 @@
             >
               Customers
             </router-link>
+            <router-link
+                to="/products"
+                class="inline-flex items-center px-3 pt-1 border-b-2 text-sm font-medium"
+                :class="$route.path === '/products' ? 'border-blue-500 text-gray-900' : 'border-transparent text-gray-500 hover:text-gray-700'"
+            >
+              Products
+            </router-link>
           </div>
         </div>
       </div>
