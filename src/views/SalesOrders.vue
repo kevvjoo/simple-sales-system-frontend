@@ -137,21 +137,21 @@
         <thead class="bg-gray-50">
           <tr>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">ID</th>
-            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+            <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Customer</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Products</th>
             <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          <tr v-for="sale in salesOrders" :key="salesOrder.id">
+          <tr v-for="salesOrder in salesOrders" :key="salesOrder.id">
             <td class="px-6 py-4">{{ salesOrder.id }}</td>
-            <td class="px-6 py-4">{{ salesOrder.customer_name }}</td>
             <td class="px-6 py-4">{{ salesOrder.date }}</td>
+            <td class="px-6 py-4">{{ salesOrder.customer_name }}</td>
             <td class="px-6 py-4">
               <div class="text-sm">
                 <div v-for="(product, idx) in salesOrder.products" :key="idx">
-                  {{ product.name }} ({{ product.quantity }}x) - Rp {{ formatPrice(product.subtotal) }}
+                  {{ product.name }} ({{ product.quantity }}x{{ formatPrice(product.price)}}) - Rp {{ formatPrice(product.subtotal) }}
                 </div>
               </div>
             </td>
