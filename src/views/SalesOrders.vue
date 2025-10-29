@@ -144,18 +144,18 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          <tr v-for="sale in sales" :key="sale.id">
-            <td class="px-6 py-4">{{ sale.id }}</td>
-            <td class="px-6 py-4">{{ sale.customer_name }}</td>
-            <td class="px-6 py-4">{{ sale.date }}</td>
+          <tr v-for="sale in salesOrders" :key="salesOrder.id">
+            <td class="px-6 py-4">{{ salesOrder.id }}</td>
+            <td class="px-6 py-4">{{ salesOrder.customer_name }}</td>
+            <td class="px-6 py-4">{{ salesOrder.date }}</td>
             <td class="px-6 py-4">
               <div class="text-sm">
-                <div v-for="(product, idx) in sale.products" :key="idx">
-                  {{ product.name }} ({{ product.qty }}x) - Rp {{ formatPrice(product.subtotal) }}
+                <div v-for="(product, idx) in salesOrder.products" :key="idx">
+                  {{ product.name }} ({{ product.quantity }}x) - Rp {{ formatPrice(product.subtotal) }}
                 </div>
               </div>
             </td>
-            <td class="px-6 py-4 font-semibold">Rp {{ formatPrice(sale.total) }}</td>
+            <td class="px-6 py-4 font-semibold">Rp {{ formatPrice(salesOrder.total) }}</td>
           </tr>
         </tbody>
       </table>
@@ -167,7 +167,7 @@
 import { ref, onMounted } from 'vue';
 import api from '../axios';
 
-const sales = ref([]);
+const salesOrders = ref([]);
 const customers = ref([]);
 const products = ref([]);
 const loading = ref(false);
@@ -183,7 +183,7 @@ const fetchSalesOrders = async () => {
   loading.value = true;
   try {
     const response = await api.get('/salesOrders');
-    sales.value = response.data;
+    salesOrders.value = response.data;
   } catch (error) {
     console.error('Error fetching sales:', error);
     alert('Failed to fetch sales');
