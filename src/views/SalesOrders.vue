@@ -126,6 +126,16 @@
       </div>
     </div>
 
+    <!-- Add Search Bar -->
+    <div class="mb-4">
+      <input
+          v-model="searchQuery"
+          type="text"
+          placeholder="Search sales order by customer's name..."
+          class="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+      />
+    </div>
+
     <!-- Loading -->
     <div v-if="loading" class="text-center py-8">
       <div class="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900"></div>
@@ -144,7 +154,7 @@
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-200">
-          <tr v-for="salesOrder in salesOrders" :key="salesOrder.id">
+          <tr v-for="salesOrder in filteredSalesOrders" :key="salesOrder.id">
             <td class="px-6 py-4">{{ salesOrder.id }}</td>
             <td class="px-6 py-4">{{ salesOrder.date }}</td>
             <td class="px-6 py-4">{{ salesOrder.customer_name }}</td>
@@ -164,11 +174,12 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, computed } from 'vue';
 import api from '../axios';
 import { showSuccess, showError, confirmDelete } from "../utils/sweetalert.js";
 
 const salesOrders = ref([]);
+const searchQuery = ref('');
 const customers = ref([]);
 const products = ref([]);
 const loading = ref(false);
@@ -178,6 +189,17 @@ const form = ref({
   customer_id: '',
   date: new Date().toISOString().split('T')[0],
   items: [{ product_id: '', qty: 1, subtotal: 0 }],
+});
+
+const filteredSalesOrders = computed(() => {
+  if (!searchQuery.value) {
+    return salesOrders.value;
+  }
+
+  const query = searchQuery.value.toLowerCase();
+  return salesOrders.value.filter(salesOrder =>
+      salesOrder.customer_name.toLowerCase().includes(query)
+  );
 });
 
 const fetchSalesOrders = async () => {
